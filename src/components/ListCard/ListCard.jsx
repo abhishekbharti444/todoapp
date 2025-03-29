@@ -6,21 +6,42 @@ import './ListCard.css';
 export function ListCard({ list, onRename, onDelete, onAddTodo, onToggleTodo, onDeleteTodo }) {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
     const [isRenaming, setIsRenaming] = React.useState(false);
+    const [editableTitle, setEditableTitle] = React.useState(list.title);
 
+    const inputRef = React.useRef(null);
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
     };
-
+    React.useEffect(() => {
+        // Update editable title when list title changes
+        setEditableTitle(list.title);
+    }, [list.title]);
     const startRenaming = () => {
         setIsMenuOpen(false);
         setIsRenaming(true);
     };
 
     const handleRename = (e) => {
-        onRename(list.id, e.target.value);
+        setEditableTitle(e.target.value);
+    };
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            finishRenaming();
+        } else if (e.key === 'Escape') {
+            cancelRenaming();
+        }
+    };
+    const finishRenaming = () => {
+        if (editableTitle.trim()) {
+            onRename(list.id, editableTitle);
+        } else {
+            setEditableTitle(list.title);
+        }
+        setIsRenaming(false);
     };
 
-    const endRenaming = () => {
+    const cancelRenaming = () => {
+        setEditableTitle(list.title);
         setIsRenaming(false);
     };
 
@@ -33,15 +54,19 @@ export function ListCard({ list, onRename, onDelete, onAddTodo, onToggleTodo, on
             <div className='card-header'>
                 {isRenaming ? (
                     <input
+                        ref={inputRef}
                         type="text"
-                        value={list.title}
+                        value={editableTitle}
                         onChange={handleRename}
-                        onBlur={endRenaming}
+                        onBlur={finishRenaming}
+                        onKeyDown={handleKeyDown}
                         autoFocus
                         className='list-title-input'
                     />
                 ) : (
-                    <h3 className="list-title">{list.title}</h3>
+                    <h3
+                        className="list-title"
+                        onDoubleClick={startRenaming}>{list.title}</h3>
                 )}
                 <div className="menu-container">
                     <button

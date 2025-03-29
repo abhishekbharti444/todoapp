@@ -19,6 +19,9 @@
     font-size: 1.1rem;
     font-weight: 500;
     color: #333;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: text;
 }
 
 .menu-container {
@@ -75,10 +78,21 @@
     background-color: #fff5f5;
 }
 
+
+.list-title:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
 .list-title-input {
     font-size: 1.1rem;
     padding: 4px 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
     width: 200px;
+    outline: none;
+}
+
+.list-title-input:focus {
+    border-color: #0066cc;
+    box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
 }
