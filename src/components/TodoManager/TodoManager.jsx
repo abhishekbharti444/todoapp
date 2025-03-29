@@ -2,16 +2,17 @@ import { Component } from "react";
 // import { preview } from "vite";
 import Todo from "../../models/Todo.js";
 import TodoList from "../../models/TodoList.js";
-import TodoForm from '../TodoForm/TodoForm.jsx';
-import TodoListItem from '../TodoListItem/TodoListItem.jsx';
+import { ListCard } from '../ListCard/ListCard';
 
 class TodoManager extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            todoLists: this.loadFromLocalStorage() || []
+            todoLists: this.loadFromLocalStorage() || [],
+            activeMenu: null
         };
     }
+
     // Storage methods
     loadFromLocalStorage = () => {
         try {
@@ -67,16 +68,29 @@ class TodoManager extends Component {
         }))
     }
 
+    // In TodoManager.jsx
     updateListTitle = (listId, newTitle) => {
         this.setState(prevState => ({
             todoLists: prevState.todoLists.map(list => {
                 if (list.id === listId) {
-                    list.updateTitle(newTitle);
+                    // Create new TodoList instance to maintain methods
+                    const updatedList = new TodoList(newTitle);
+                    updatedList.id = list.id;
+                    // Copy existing todos
+                    updatedList.todos = list.todos.map(todo => {
+                        const newTodo = new Todo(todo.todoText);
+                        newTodo.id = todo.id;
+                        newTodo.completed = todo.completed;
+                        newTodo.createdAt = todo.createdAt;
+                        return newTodo;
+                    });
+                    return updatedList;
                 }
                 return list;
             })
-        }))
+        }));
     }
+
 
     // In TodoManager.jsx
     addTodoToList = (listId, todoData) => {
@@ -139,39 +153,19 @@ class TodoManager extends Component {
                 </button>
                 <div className="lists-container">
                     {this.state.todoLists.map(list => (
-                        <div key={list.id} className="todo-card">
-                            <div className='card-header'>
-                                <input
-                                    type="text"
-                                    value={list.title}
-                                    onChange={(e) => this.updateListTitle(list.id, e.target.value)}
-                                    className='list-title-input'
-                                />
-                                <button
-                                    onClick={() => this.deleteList(list.id)}
-                                    className='delete-list-button'
-                                    aria-label="Delete list"
-                                >
-                                    ×
-                                </button>
-                            </div>
-                            <TodoForm
-                                onAddTodo={(todoData) => this.addTodoToList(list.id, todoData)}
-                                placeholder="Add a new task..."
-                            />
-                            <TodoListItem
-                                todos={list.getTodos()}
-                                onToggle={(todoId) => this.toggleTodoInList(list.id, todoId)}
-                                onDelete={(todoId) => this.deleteTodoFromList(list.id, todoId)}
-                            />
-                        </div>
-
+                        <ListCard
+                            key={list.id}
+                            list={list}
+                            onRename={this.updateListTitle}
+                            onDelete={this.deleteList}
+                            onAddTodo={this.addTodoToList}
+                            onToggleTodo={this.toggleTodoInList}
+                            onDeleteTodo={this.deleteTodoFromList}
+                        />
                     ))}
-
                 </div>
-
             </div>
-        )
+        );
     }
 
 
