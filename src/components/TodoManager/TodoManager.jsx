@@ -3,7 +3,7 @@ import { Component } from "react";
 import Todo from "../../models/Todo.js";
 import TodoList from "../../models/TodoList.js";
 import { ListCard } from '../ListCard/ListCard';
-
+import './TodoManager.css'
 class TodoManager extends Component {
     constructor(props) {
         super(props);
@@ -39,11 +39,6 @@ class TodoManager extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        // Add debug logs
-        console.log('Component did update');
-        // console.log('Previous todos:', prevState.todoLists);
-        // console.log('Current todos:', this.state.todoLists);
-
         this.saveToLocalStorage();
     }
     saveToLocalStorage = () => {
@@ -59,7 +54,7 @@ class TodoManager extends Component {
     addNewList = () => {
         const newList = new TodoList(`List ${this.state.todoLists.length + 1}`);
         this.setState(prevState => ({
-            todoLists: [...prevState.todoLists, newList]
+            todoLists: [newList, ...prevState.todoLists]
         }));
     }
     deleteList = (listId) => {
@@ -147,22 +142,29 @@ class TodoManager extends Component {
 
     render() {
         return (
-            <div className="todo-manager">
-                <button onClick={this.addNewList} className="add-list-button">
-                    + New Todo List
-                </button>
-                <div className="lists-container">
-                    {this.state.todoLists.map(list => (
-                        <ListCard
-                            key={list.id}
-                            list={list}
-                            onRename={this.updateListTitle}
-                            onDelete={this.deleteList}
-                            onAddTodo={this.addTodoToList}
-                            onToggleTodo={this.toggleTodoInList}
-                            onDeleteTodo={this.deleteTodoFromList}
-                        />
-                    ))}
+            <div className="app-wrapper">
+                <div className="app-header">
+                    <h1 className="app-title">Todo Lists</h1>
+                    <button onClick={this.addNewList} className="add-list-button">
+                        Create New List
+                    </button>
+                </div>
+                <div className="app-content">
+                    <div className="todo-manager">
+                        <div className="lists-container">
+                            {this.state.todoLists.map(list => (
+                                <ListCard
+                                    key={list.id}
+                                    list={list}
+                                    onRename={this.updateListTitle}
+                                    onDelete={this.deleteList}
+                                    onAddTodo={this.addTodoToList}
+                                    onToggleTodo={this.toggleTodoInList}
+                                    onDeleteTodo={this.deleteTodoFromList}
+                                />
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </div>
         );
