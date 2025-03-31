@@ -20,21 +20,18 @@ if [ ! -f "src/main.jsx" ]; then
     exit 1
 fi
 
-# Remove gh-pages branch locally and remotely (ignore errors if branch doesn't exist)
-git branch -D gh-pages || true
-git push origin --delete gh-pages || true
-
-# Commit any pending changes
+# Commit any pending changes to main branch
 git add .
 git commit -m "Update before deployment" || true
-git push || true
+git push origin main || true
 
-# Build and deploy
+# Build the project
 npm run build || {
     echo "Build failed!"
     exit 1
 }
 
+# Deploy using gh-pages (this will create/update gh-pages branch automatically)
 npm run deploy
 
 # Print completion message
