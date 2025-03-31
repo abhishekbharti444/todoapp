@@ -65,17 +65,28 @@ const DraggableTodoItem = ({ todo, index, onToggle, onDelete, moveTodo }) => {
 
 // Main TodoListItem class component
 class TodoListItem extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isCompletedVisible: false
+        };
+    }
     render() {
         const { todos, onToggle, onDelete, onReorder } = this.props;
-
+        const { isCompletedVisible } = this.state;
         if (!todos || todos.length === 0) {
             return null;
         }
 
+        // Separate active and completed todos
+        const activeTodos = todos.filter(todo => !todo.completed);
+        const completedTodos = todos.filter(todo => todo.completed);
+
         return (
             <div className="card">
                 <ul className="todo-list">
-                    {todos.map((todo, index) => (
+                    {/* Active todos */}
+                    {activeTodos.map((todo, index) => (
                         <DraggableTodoItem
                             key={todo.id}
                             todo={todo}
@@ -85,6 +96,38 @@ class TodoListItem extends Component {
                             moveTodo={onReorder}
                         />
                     ))}
+
+                    {/* Completed todos section */}
+                    {completedTodos.length > 0 && (
+                        <div className="completed-section">
+                            <button
+                                className="completed-toggle"
+                                onClick={() => this.setState(prev => ({
+                                    isCompletedVisible: !prev.isCompletedVisible
+                                }))}
+                            >
+                                <span className="toggle-icon">
+                                    {isCompletedVisible ? '▼' : '▶'}
+                                </span>
+                                Completed ({completedTodos.length})
+                            </button>
+
+                            {isCompletedVisible && (
+                                <ul className="completed-list">
+                                    {completedTodos.map((todo, index) => (
+                                        <DraggableTodoItem
+                                            key={todo.id}
+                                            todo={todo}
+                                            index={activeTodos.length + index}
+                                            onToggle={onToggle}
+                                            onDelete={onDelete}
+                                            moveTodo={onReorder}
+                                        />
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+                    )}
                 </ul>
             </div>
         );

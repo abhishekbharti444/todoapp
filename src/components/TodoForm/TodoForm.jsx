@@ -44,10 +44,7 @@ class TodoForm extends Component {
                     aria-label='New todo item'
                     className='todo-input'
                 />
-                <button
-                    type='submit'
-                    className='todo-button'
-                >
+                <button type='submit' className='todo-button'>
                     Add
                 </button>
             </form>
