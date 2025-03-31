@@ -7,7 +7,7 @@ export function ListCard({ list, onRename, onDelete, onAddTodo, onToggleTodo, on
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
     const [isRenaming, setIsRenaming] = React.useState(false);
     const [editableTitle, setEditableTitle] = React.useState(list.title);
-
+    const [, forceUpdate] = React.useState({});
     const inputRef = React.useRef(null);
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
@@ -47,6 +47,16 @@ export function ListCard({ list, onRename, onDelete, onAddTodo, onToggleTodo, on
 
     const handleDelete = () => {
         onDelete(list.id);
+    };
+    const handleReorderTodos = (dragIndex, hoverIndex) => {
+        list.reorderTodos(dragIndex, hoverIndex);
+        // Force a re-render by creating a new reference
+        const updatedList = { ...list };
+        // You might need to add an onUpdate prop to handle state updates
+        if (typeof onUpdate === 'function') {
+            onUpdate(updatedList);
+        }
+        forceUpdate({});
     };
 
     return (
@@ -102,6 +112,7 @@ export function ListCard({ list, onRename, onDelete, onAddTodo, onToggleTodo, on
                 todos={list.getTodos()}
                 onToggle={(todoId) => onToggleTodo(list.id, todoId)}
                 onDelete={(todoId) => onDeleteTodo(list.id, todoId)}
+                onReorder={handleReorderTodos}
             />
         </div>
     );

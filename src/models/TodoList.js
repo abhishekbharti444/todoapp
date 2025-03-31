@@ -8,14 +8,18 @@ class TodoList {
     }
 
     addTodo(todoText) {
-        console.log('Before adding:', this.todos.length); // Debug log
-
         const todo = new Todo(todoText);
         this.todos.push(todo);
-        console.log('After adding:', this.todos.length); // Debug log
         return todo;
     }
-
+    // Modify the existing reorderTodos method
+    reorderTodos(dragIndex, hoverIndex) {
+        const reorderedTodos = [...this.todos];
+        const [draggedItem] = reorderedTodos.splice(dragIndex, 1);
+        reorderedTodos.splice(hoverIndex, 0, draggedItem);
+        this.todos = reorderedTodos; // Directly update the todos array
+        return this.todos;
+    }
     deleteTodo(todoId) {
         this.todos = this.todos.filter(todo => todo.id !== todoId);
     }

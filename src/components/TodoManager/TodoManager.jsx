@@ -139,6 +139,21 @@ class TodoManager extends Component {
             return { todoLists: newLists };
         })
     }
+    // Add method to handle reordering todos within a list
+    reorderTodos(listId, dragIndex, hoverIndex) {
+        const list = this.getList(listId);
+        if (!list) return;
+
+        const todos = list.getTodos();
+        const reorderedTodos = [...todos];
+        const [draggedItem] = reorderedTodos.splice(dragIndex, 1);
+        reorderedTodos.splice(hoverIndex, 0, draggedItem);
+
+        list.setTodos(reorderedTodos);
+        this.saveLists(); // If you're persisting to localStorage
+
+        return reorderedTodos;
+    }
 
     render() {
         return (
@@ -161,6 +176,7 @@ class TodoManager extends Component {
                                     onAddTodo={this.addTodoToList}
                                     onToggleTodo={this.toggleTodoInList}
                                     onDeleteTodo={this.deleteTodoFromList}
+                                    onReorderTodos={this.handleReorderTodos}
                                 />
                             ))}
                         </div>

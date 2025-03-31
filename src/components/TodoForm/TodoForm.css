@@ -1,13 +1,16 @@
 .todo-form {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 4px;
+    margin: 4px 4px;
+    width: calc(100% - 32px);
+    /* margin-bottom: 15px; */
     width: 100%;
 }
 
 .todo-input {
     flex: 1;
-    min-width: 0; /* Prevents input from overflowing */
+    min-width: 0;
+    /* Prevents input from overflowing */
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -26,13 +29,14 @@
     transition: all 0.3s ease;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     white-space: nowrap;
-    flex-shrink: 0; /* Prevents button from shrinking */
+    flex-shrink: 0;
+    /* Prevents button from shrinking */
 }
 
 .todo-button:hover {
     background: linear-gradient(to bottom right, #45a049, #4CAF50);
     transform: translateY(-1px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(209, 202, 202, 0.1);
 }
 
 .todo-button:active {
