@@ -3,6 +3,9 @@
 # Print commands as they are executed
 set -x
 
+# Stop on any error
+set -e
+
 # Remove existing build files
 rm -rf dist
 rm -rf node_modules/.vite
@@ -14,16 +17,32 @@ npm cache clean --force
 # Reinstall dependencies
 npm install
 
-# Make sure the src/main.jsx file exists
-if [ ! -f "src/main.jsx" ]; then
-    echo "Error: src/main.jsx not found!"
+# Make sure we're on the main branch
+git checkout main || {
+    echo "Failed to checkout main branch"
     exit 1
-fi
+}
 
-# Commit any pending changes to main branch
-git add .
-git commit -m "Update before deployment" || true
-git push origin main || true
+# Pull latest changes
+git pull origin main || {
+    echo "Failed to pull latest changes"
+    exit 1
+}
+
+# Add all changes to git
+git add . || {
+    echo "Failed to stage changes"
+    exit 1
+}
+
+# Commit changes (will not fail if there's nothing to commit)
+git commit -m "Updates before deployment" || true
+
+# Push to main branch
+git push origin main || {
+    echo "Failed to push to main branch"
+    exit 1
+}
 
 # Build the project
 npm run build || {
@@ -31,8 +50,22 @@ npm run build || {
     exit 1
 }
 
-# Deploy using gh-pages (this will create/update gh-pages branch automatically)
-npm run deploy
+# Create .nojekyll file
+touch dist/.nojekyll
+
+# Deploy using gh-pages
+# This will create/update the gh-pages branch and push to GitHub
+npm run deploy || {
+    echo "Deployment failed!"
+    exit 1
+}
 
 # Print completion message
 echo "Deployment completed! Please check https://abhishekbharti444.github.io/todoapp/"
+
+# Print additional information
+echo "Note: It might take a few minutes for GitHub Pages to update."
+echo "If you don't see your changes, please:"
+echo "1. Check the Actions tab on GitHub for deployment status"
+echo "2. Clear your browser cache"
+echo "3. Wait a few minutes and try again"
